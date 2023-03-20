@@ -1,0 +1,78 @@
+@startuml
+class EngineService {
+EngineRunResponse run(EngineRunRequest req)
+}
+
+class PipelineContext
+
+class Rule{
+    List<Condition> : conditions
+    Decision : decision
+    Output parse(PipelineContext ctx, Map<String, IFeature> depends)
+}
+
+class Condition{
+    String:name
+    String:feature
+    String:operator
+    Object:value
+    String:result
+}
+
+class Decision
+class EngineRunRequest
+class EngineRunResponse
+
+enum FeatureType
+
+interface IFeature{
+    String getName();
+    void setValue(Object value);
+    Object getValue();
+    FeatureType getType();
+    Map<String, Object> supportOperators();
+    boolean compare(String op, Object value)
+}
+
+class TypeDefaultFeature{
+FeatureType getType()
+boolean compare(String op, Object value)
+}
+
+class TypeNumFeature{
+FeatureType getType()
+boolean compare(String op, Object value)
+}
+
+class FlowNode{
+    INode : elem
+    FlowNode : nextNode
+    NodeResult parse(PipelineContext ctx)
+}
+interface INode{
+NodeResult parse(PipelineContext pipelineContext)
+}
+class NodeResult
+INode <|- RulesetNode
+INode <|- ScorecardNode
+
+IFeature <|- TypeNumFeature
+IFeature <|- TypeDefaultFeature
+
+ScorecardNode *-- Rule
+Rule *-- Condition
+Rule *-- Decision
+
+EngineService *-- EngineRunResponse
+EngineService *-- EngineRunRequest
+
+FlowNode *-- INode
+
+IFeature *-- FeatureType
+
+class DecisionFlow {
+    void run(PipelineContext ctx)
+    Map<String, Object> parseNode(FlowNode curNode, PipelineContext ctx)
+}
+
+@enduml
