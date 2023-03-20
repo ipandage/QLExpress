@@ -16,7 +16,7 @@ public class Operator {
         DefaultContext<String, Object> context = new DefaultContext<String, Object>();
         context.putAll(conditionRet);
         // 规则脚本
-        expr = "a > b";
+        expr = "a & b";
         // 规则结果
         Object r = runner.execute(expr, context, null, true, false);
         if (r instanceof Boolean) {
