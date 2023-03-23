@@ -53,18 +53,25 @@ interface INode{
 NodeResult parse(PipelineContext pipelineContext)
 }
 class NodeResult
+class RulesetNode
+class ScorecardNode
+class TreeNode
+
 INode <|- RulesetNode
 INode <|- ScorecardNode
+INode <|- TreeNode
 
 IFeature <|- TypeNumFeature
 IFeature <|- TypeDefaultFeature
+IFeature <|- TypeXXFeature
 
-ScorecardNode *-- Rule
+RulesetNode *-- Rule
 Rule *-- Condition
 Rule *-- Decision
 
 EngineService *-- EngineRunResponse
 EngineService *-- EngineRunRequest
+EngineService *-- DecisionFlow
 
 FlowNode *-- INode
 
@@ -74,5 +81,10 @@ class DecisionFlow {
     void run(PipelineContext ctx)
     Map<String, Object> parseNode(FlowNode curNode, PipelineContext ctx)
 }
+
+
+DecisionFlow *-- FlowNode
+
+
 
 @enduml

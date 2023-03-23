@@ -2,26 +2,32 @@
 'https://plantuml.com/sequence-diagram
 
 autonumber
+hide footbox
 
-EngineService -> EngineService: run
-EngineService -> DecisionFlow: run
+EngineService -> EngineService: run(EngineRunRequest req)
+EngineService -> DecisionFlow: run(PipelineContext ctx)
 DecisionFlow -> DecisionFlow: getStartNode
 DecisionFlow -> DecisionFlow: parseNode
 DecisionFlow -> FlowNode: parse
 FlowNode -> RulesetNode: parse
 RulesetNode -> PipelineContext: getFeatures
-RulesetNode -> RulesetNode: getRules
+RulesetNode -> RulesetNode: getRules 遍历
 RulesetNode -> Rule: parse
-Rule -> Rule: getConditions
-Rule -> IFeature: compare
+Rule -> Rule: getConditions 遍历
+Rule -> IFeature: compare（op, value）
+Rule <-- Rule: 返回 compare 结果 rs
+Rule -> Rule: 保存到 conditionRet map
 Rule -> Decision: getLogic
-Rule -> Operator: evaluate
-Rule <-- Rule: Output
+Rule <-- Decision: 返回 expr
+Rule -> Operator: evaluate(expr, conditionRet)
+Rule <-- Operator: 返回 logicRet
+Rule -> Rule: 保存到 Output
 RulesetNode <-- Rule: Output
 FlowNode <-- RulesetNode: NodeResult
 DecisionFlow <-- FlowNode: NodeResult
 DecisionFlow -> DecisionFlow: NodeResult
 DecisionFlow -> PipelineContext: addNodeResult
 DecisionFlow <-- DecisionFlow: put resultMap（nextNode以及gotoNext标识）
+EngineService <-- EngineService: dataAdapter 返回 EngineRunResponse
 
 @enduml
